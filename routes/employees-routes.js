@@ -3,7 +3,7 @@ const router = express.Router();
 
 const mysqlConnection = require('../connection');
 
-const  bodyParser = require('body-parser');
+
 
 // get all employee
 router.get('/employee', (req, res,next) => {
@@ -43,7 +43,9 @@ router.delete('/employee/:id', (req, res,next) => {
 
 //add employee
 router.post('/employee/', (req, res,next) => {
+ 
     let emp = req.body;
+    console.log(emp);
 
     mysqlConnection.query('INSERT INTO clients (name, debit,credit,note) VALUES (?,?,?,?)',[emp.name,emp.debit,emp.credit,emp.note], (err, rows, fields) => {
         if (!err) {
@@ -58,6 +60,7 @@ router.post('/employee/', (req, res,next) => {
 //update employee
 router.put('/employee/:id', (req, res,next) => {
     let emp = req.body;
+    
 
     mysqlConnection.query('UPDATE clients set name = ?, debit = ?, credit = ?, note = ? WHERE uid = ?',[emp.name,emp.debit,emp.credit,emp.note,req.params.id], (err, rows, fields) => {
         if (!err) {
