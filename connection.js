@@ -4,7 +4,7 @@ var mysqlConnection = mysql.createConnection({
     host: 'localhost',
     user: 'root',
     password: 'password',
-    database: 'Client',
+    database: 'businessPlanner',
     multipleStatements: true
 });
 mysqlConnection.connect((err) => {

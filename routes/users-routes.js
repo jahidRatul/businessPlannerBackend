@@ -39,8 +39,8 @@ router.get('/user',checkToken, (req, res, next) => {
 });
 
 //get an user
-router.get('/user/:number',checkToken, (req, res, next) => {
-    mysqlConnection.query('SELECT * from users WHERE mobileno = ?', [req.params.number], (err, rows, fields) => {
+router.get('/user/:id',checkToken, (req, res, next) => {
+    mysqlConnection.query('SELECT * from users WHERE accId = ?', [req.params.id], (err, rows, fields) => {
         if (!err) {
             res.send(rows);
         } else {
@@ -51,11 +51,11 @@ router.get('/user/:number',checkToken, (req, res, next) => {
 });
 
 //update user
-router.put('/user/:number',checkToken, (req, res, next) => {
+router.put('/user/:id',checkToken, (req, res, next) => {
     let usr = req.body;
 
 
-    mysqlConnection.query('UPDATE users set  name = ? WHERE mobileno = ?', [usr.name, req.params.number], (err, rows, fields) => {
+    mysqlConnection.query('UPDATE users set  name = ?  WHERE accId = ?', [usr.name, req.params.id], (err, rows, fields) => {
         if (!err) {
             res.send(rows);
         } else {
@@ -66,8 +66,8 @@ router.put('/user/:number',checkToken, (req, res, next) => {
 });
 
 //delete an user
-router.delete('/user/:number',checkToken, (req, res, next) => {
-    mysqlConnection.query('DELETE from users WHERE mobileno = ?', [req.params.number], (err, rows, fields) => {
+router.delete('/user/:id',checkToken, (req, res, next) => {
+    mysqlConnection.query('DELETE from users WHERE accId = ?', [req.params.id], (err, rows, fields) => {
         if (!err) {
             res.send('deleted successfully');
         } else {
