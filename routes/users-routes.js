@@ -12,11 +12,12 @@ router.post('/register/', (req, res, next) => {
     let usr = req.body;
     const salt = genSaltSync(10);
     usr.password = hashSync(usr.password, salt);
-
-
     mysqlConnection.query('INSERT INTO users (mobileno, name, password) VALUES (?,?,?)', [usr.mobileno, usr.name, usr.password], (err, rows, fields) => {
         if (!err) {
-            res.send(rows);
+            res.json({
+                success: 1,
+                message: " registered successfully "
+            });
         } else {
             console.log(err);
 
@@ -33,10 +34,10 @@ router.post('/login', (req, res, next) => {
         if (err) {
             console.log(err);
         }
-        if (rows.length===0) {
+        if (rows.length === 0) {
             return res.json({
                 success: 0,
-                data: " Invalid Mobile Number"
+                message: " Invalid Mobile Number "
             })
         }
 
@@ -47,11 +48,17 @@ router.post('/login', (req, res, next) => {
             rows[0].password = undefined;
 
             const jwt = sign({ result: rows }, "jwtSecretKey", { expiresIn: "1h" });
+         
 
             return res.json({
+                
                 success: 1,
                 message: "login successfully",
+                name: rows[0].name,
+                accId: rows[0].accId,
                 token: jwt
+                
+                
             });
         }
         else {
@@ -96,7 +103,7 @@ router.put('/user/:id', checkToken, (req, res, next) => {
     usr.password = hashSync(usr.password, salt);
 
 
-    mysqlConnection.query('UPDATE users set  name = ?, password =?  WHERE accId = ?', [usr.name,usr.password, req.params.id], (err, rows, fields) => {
+    mysqlConnection.query('UPDATE users set  name = ?, password =?  WHERE accId = ?', [usr.name, usr.password, req.params.id], (err, rows, fields) => {
         if (!err) {
             res.send(rows);
         } else {

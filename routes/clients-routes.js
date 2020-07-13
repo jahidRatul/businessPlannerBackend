@@ -12,9 +12,12 @@ router.post('/client/', checkToken, (req, res, next) => {
     const tTime = new Date();
 
 
-    mysqlConnection.query('INSERT INTO clients (name) VALUES (?)', [clnt.name,], (err, rows, fields) => {
+    mysqlConnection.query('INSERT INTO clients (name, uId) VALUES (?,?)', [clnt.name,clnt.uId], (err, rows, fields) => {
         if (!err) {
-            res.send(rows);
+            res.json({
+                success: 1,
+                message: " added successfully "
+            });
         } else {
             console.log(err);
         }

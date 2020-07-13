@@ -6,15 +6,16 @@ const { checkToken } = require('./auth/token-validation');
 
 
 //add employee
-router.post('/employee/',checkToken, (req, res, next) => {
+router.post('/employee/', checkToken, (req, res, next) => {
 
     let emp = req.body;
     const tTime = new Date();
-
-
-    mysqlConnection.query('INSERT INTO employees (name) VALUES (?)', [emp.name,], (err, rows, fields) => {
+    mysqlConnection.query('INSERT INTO employees (name, uId) VALUES (?,?)', [emp.name,emp.uId], (err, rows, fields) => {
         if (!err) {
-            res.send(rows);
+            res.json({
+                success: 1,
+                message: " added successfully "
+            });
         } else {
             console.log(err);
         }
@@ -23,7 +24,7 @@ router.post('/employee/',checkToken, (req, res, next) => {
 });
 
 // get all employee
-router.get('/employee',checkToken, (req, res, next) => {
+router.get('/employee', checkToken, (req, res, next) => {
     mysqlConnection.query('SELECT * from employees', (err, rows, fields) => {
         if (!err) {
             res.send(rows);
@@ -78,9 +79,9 @@ router.post('/employee/debit/:id', checkToken, (req, res, next) => {
     let emp = req.body;
     const tTime = new Date();
 
-    
 
-    mysqlConnection.query('INSERT INTO debitTable (pId,ammount,tTime,note, type) VALUES (?,?,?,?,?)', [req.params.id, emp.ammount, tTime, emp.note,"emp"], (err, rows, fields) => {
+
+    mysqlConnection.query('INSERT INTO debitTable (pId,ammount,tTime,note, type) VALUES (?,?,?,?,?)', [req.params.id, emp.ammount, tTime, emp.note, "emp"], (err, rows, fields) => {
         if (!err) {
             res.send(rows);
         } else {
@@ -94,7 +95,7 @@ router.post('/employee/debit/:id', checkToken, (req, res, next) => {
 router.post('/employee/credit/:id', checkToken, (req, res, next) => {
     const tTime = new Date();
     let emp = req.body;
-    mysqlConnection.query('INSERT INTO creditTable (pId,ammount,tTime,note,type) VALUES (?,?,?,?,?)', [req.params.id, emp.ammount, tTime, emp.note,"emp"], (err, rows, fields) => {
+    mysqlConnection.query('INSERT INTO creditTable (pId,ammount,tTime,note,type) VALUES (?,?,?,?,?)', [req.params.id, emp.ammount, tTime, emp.note, "emp"], (err, rows, fields) => {
         if (!err) {
             res.send(rows);
         } else {
