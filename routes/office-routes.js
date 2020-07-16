@@ -5,15 +5,18 @@ const mysqlConnection = require('../connection');
 const { checkToken } = require('./auth/token-validation');
 
 // Transfer debit balance
-router.post('/debit/:id', checkToken, (req, res, next) => {
+router.post('/debit/', checkToken, (req, res, next) => {
     let emp = req.body;
     const tTime = new Date();
 
     
 
-    mysqlConnection.query('INSERT INTO debitTable (pId,ammount,tTime,note, type) VALUES (?,?,?,?,?)', [req.params.id, emp.ammount, tTime, emp.note,"ofc"], (err, rows, fields) => {
+    mysqlConnection.query('INSERT INTO debitTable (pId,amount,uId, tTime,note, type) VALUES (?,?,?,?,?,?)', [1, emp.amount, emp.uId, tTime, emp.note,"ofc"], (err, rows, fields) => {
         if (!err) {
-            res.send(rows);
+            res.json({
+                success: 1,
+                message: " added successfully "
+            });
         } else {
             console.log(err);
         }
@@ -22,12 +25,15 @@ router.post('/debit/:id', checkToken, (req, res, next) => {
 });
 
 // Transfer credit balance
-router.post('/credit/:id', checkToken, (req, res, next) => {
+router.post('/credit/', checkToken, (req, res, next) => {
     const tTime = new Date();
     let emp = req.body;
-    mysqlConnection.query('INSERT INTO creditTable (pId,ammount,tTime,note,type) VALUES (?,?,?,?,?)', [req.params.id, emp.ammount, tTime, emp.note,"ofc"], (err, rows, fields) => {
+    mysqlConnection.query('INSERT INTO creditTable (pId,amount,uId,tTime,note,type) VALUES (?,?,?,?,?,?)', [1, emp.amount, emp.uId, tTime, emp.note,"ofc"], (err, rows, fields) => {
         if (!err) {
-            res.send(rows);
+            res.json({
+                success: 1,
+                message: " added successfully "
+            });
         } else {
             console.log(err);
         }

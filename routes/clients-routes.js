@@ -80,7 +80,7 @@ router.delete('/client/:id', checkToken, (req, res, next) => {
 router.post('/client/debit/:id', checkToken, (req, res, next) => {
     let clnt = req.body;
     const tTime = new Date();
-    mysqlConnection.query('INSERT INTO debitTable (pId,ammount,tTime,note,type) VALUES (?,?,?,?,?)', [req.params.id, clnt.ammount, tTime, clnt.note,"client"], (err, rows, fields) => {
+    mysqlConnection.query('INSERT INTO debitTable (pId,amount,tTime,note,type) VALUES (?,?,?,?,?)', [req.params.id, clnt.amount, tTime, clnt.note,"client"], (err, rows, fields) => {
         if (!err) {
             res.send(rows);
         } else {
@@ -94,7 +94,7 @@ router.post('/client/debit/:id', checkToken, (req, res, next) => {
 router.post('/client/credit/:id', checkToken, (req, res, next) => {
     const tTime = new Date();
     let clnt = req.body;
-    mysqlConnection.query('INSERT INTO creditTable (pId,ammount,tTime,note,type) VALUES (?,?,?,?,?)', [req.params.id, clnt.ammount, tTime, clnt.note,"client"], (err, rows, fields) => {
+    mysqlConnection.query('INSERT INTO creditTable (pId,amount,tTime,note,type) VALUES (?,?,?,?,?)', [req.params.id, clnt.amount, tTime, clnt.note,"client"], (err, rows, fields) => {
         if (!err) {
             res.send(rows);
         } else {
