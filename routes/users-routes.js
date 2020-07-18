@@ -20,6 +20,10 @@ router.post('/register/', (req, res, next) => {
             });
         } else {
             console.log(err);
+            // return res.json({
+            //     success: 0,
+            //     message: "Already have Account "
+            // })
 
         }
     })
