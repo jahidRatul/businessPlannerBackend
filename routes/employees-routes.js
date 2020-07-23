@@ -25,7 +25,7 @@ router.post('/employee/', checkToken, (req, res, next) => {
 
 // get all employee
 router.get('/employee', checkToken, (req, res, next) => {
-    mysqlConnection.query('SELECT * from employees', (err, rows, fields) => {
+    mysqlConnection.query('SELECT * from employees',  (err, rows, fields) => {
         if (!err) {
             res.send(rows);
         } else {
@@ -77,7 +77,7 @@ router.delete('/employee/:id', checkToken, (req, res, next) => {
 // Transfer debit balance
 router.post('/employee/debit/:id', checkToken, (req, res, next) => {
     let emp = req.body;
-    const tTime = new Date();
+    const tTime = new Date().toISOString().slice(0, 19).replace('T', ' ');
 
 
 
@@ -93,7 +93,7 @@ router.post('/employee/debit/:id', checkToken, (req, res, next) => {
 
 // Transfer credit balance
 router.post('/employee/credit/:id', checkToken, (req, res, next) => {
-    const tTime = new Date();
+    const tTime = new Date().toISOString().slice(0, 19).replace('T', ' ');
     let emp = req.body;
     mysqlConnection.query('INSERT INTO creditTable (pId,amount, uId,tTime,note,type) VALUES (?,?,?,?,?,?)', [req.params.id, emp.amount,emp.uId, tTime, emp.note, "emp"], (err, rows, fields) => {
         if (!err) {
