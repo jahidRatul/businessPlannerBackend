@@ -10,7 +10,7 @@ router.post('/employee/', checkToken, (req, res, next) => {
 
     let emp = req.body;
     const tTime = new Date();
-    mysqlConnection.query('INSERT INTO employees (name, uId) VALUES (?,?)', [emp.name,emp.uId], (err, rows, fields) => {
+    mysqlConnection.query('INSERT INTO employees (name, uId) VALUES (?,?)', [emp.name, emp.uId], (err, rows, fields) => {
         if (!err) {
             res.json({
                 success: 1,
@@ -24,8 +24,8 @@ router.post('/employee/', checkToken, (req, res, next) => {
 });
 
 // get all employee
-router.get('/employee', checkToken, (req, res, next) => {
-    mysqlConnection.query('SELECT * from employees',  (err, rows, fields) => {
+router.get('/employee/user=:uId', checkToken, (req, res, next) => {
+    mysqlConnection.query('SELECT * from employees where uId =?', [req.params.uId], (err, rows, fields) => {
         if (!err) {
             res.send(rows);
         } else {
@@ -84,7 +84,7 @@ router.post('/employee/debit/:id', checkToken, (req, res, next) => {
     mysqlConnection.query('INSERT INTO debitTable (pId,amount, uId, tTime, note, type) VALUES (?,?,?,?,?,?)', [req.params.id, emp.amount, emp.uId, tTime, emp.note, "emp"], (err, rows, fields) => {
         if (!err) {
             res.send(rows);
-        } else { 
+        } else {
             console.log(err);
         }
     })
@@ -95,7 +95,7 @@ router.post('/employee/debit/:id', checkToken, (req, res, next) => {
 router.post('/employee/credit/:id', checkToken, (req, res, next) => {
     const tTime = new Date().toISOString().slice(0, 19).replace('T', ' ');
     let emp = req.body;
-    mysqlConnection.query('INSERT INTO creditTable (pId,amount, uId,tTime,note,type) VALUES (?,?,?,?,?,?)', [req.params.id, emp.amount,emp.uId, tTime, emp.note, "emp"], (err, rows, fields) => {
+    mysqlConnection.query('INSERT INTO creditTable (pId,amount, uId,tTime,note,type) VALUES (?,?,?,?,?,?)', [req.params.id, emp.amount, emp.uId, tTime, emp.note, "emp"], (err, rows, fields) => {
         if (!err) {
             res.send(rows);
         } else {

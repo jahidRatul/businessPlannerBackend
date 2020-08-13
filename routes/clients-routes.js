@@ -12,7 +12,7 @@ router.post('/client/', checkToken, (req, res, next) => {
     const tTime = new Date();
 
 
-    mysqlConnection.query('INSERT INTO clients (name, uId) VALUES (?,?)', [clnt.name,clnt.uId], (err, rows, fields) => {
+    mysqlConnection.query('INSERT INTO clients (name, uId) VALUES (?,?)', [clnt.name, clnt.uId], (err, rows, fields) => {
         if (!err) {
             res.json({
                 success: 1,
@@ -26,8 +26,8 @@ router.post('/client/', checkToken, (req, res, next) => {
 });
 
 // get all clients
-router.get('/client', checkToken, (req, res, next) => {
-    mysqlConnection.query('SELECT * from clients', (err, rows, fields) => {
+router.get('/client/user=:uId', checkToken, (req, res, next) => {
+    mysqlConnection.query('SELECT * from clients where uId =?', [req.params.uId], (err, rows, fields) => {
         if (!err) {
             res.send(rows);
         } else {
@@ -80,7 +80,7 @@ router.delete('/client/:id', checkToken, (req, res, next) => {
 router.post('/client/debit/:id', checkToken, (req, res, next) => {
     let clnt = req.body;
     const tTime = new Date();
-    mysqlConnection.query('INSERT INTO debitTable (pId,amount,uId,tTime,note,type) VALUES (?,?,?,?,?,?)', [req.params.id, clnt.amount,clnt.uId, tTime, clnt.note,"client"], (err, rows, fields) => {
+    mysqlConnection.query('INSERT INTO debitTable (pId,amount,uId,tTime,note,type) VALUES (?,?,?,?,?,?)', [req.params.id, clnt.amount, clnt.uId, tTime, clnt.note, "client"], (err, rows, fields) => {
         if (!err) {
             res.send(rows);
         } else {
@@ -94,7 +94,7 @@ router.post('/client/debit/:id', checkToken, (req, res, next) => {
 router.post('/client/credit/:id', checkToken, (req, res, next) => {
     const tTime = new Date();
     let clnt = req.body;
-    mysqlConnection.query('INSERT INTO creditTable (pId,amount,uId,tTime,note,type) VALUES (?,?,?,?,?,?)', [req.params.id, clnt.amount,clnt.uId, tTime, clnt.note,"client"], (err, rows, fields) => {
+    mysqlConnection.query('INSERT INTO creditTable (pId,amount,uId,tTime,note,type) VALUES (?,?,?,?,?,?)', [req.params.id, clnt.amount, clnt.uId, tTime, clnt.note, "client"], (err, rows, fields) => {
         if (!err) {
             res.send(rows);
         } else {
