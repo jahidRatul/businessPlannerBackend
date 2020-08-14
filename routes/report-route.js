@@ -25,9 +25,9 @@ router.post('/report/transactions/all', checkToken, (req, res, next) => {
         }
     );
 });
-// get all individual transaction for user
+// get all individual ofc, emp, client total summuary report for user
 router.post("/report/transactions/currentBalanceIndividual", checkToken, (req, res, next) => {
-    mysqlConnection.query(" select ofcCredit.total - ofcDebit.total as ofc, clientCredit.total- clientDebit.total as client,empCredit.total- empDebit.total as emp from (select sum(creditTable.amount) total,users.name from creditTable inner join users where users.accId=creditTable.uid AND creditTable.type='ofc' AND users.accId =?) ofcCredit, (select sum(debitTable.amount) total,users.name from debitTable inner join users where users.accId=debitTable.uid AND debitTable.type='ofc' AND users.accId =?) ofcDebit inner join (select sum(creditTable.amount) total,users.name from creditTable inner join users where users.accId=creditTable.uid AND creditTable.type='client' AND users.accId =?) clientCredit, (select sum(debitTable.amount) total,users.name from debitTable inner join users where users.accId=debitTable.uid AND debitTable.type='client' AND users.accId =?) clientDebit inner join (select sum(creditTable.amount) total,users.name from creditTable inner join users where users.accId=creditTable.uid AND creditTable.type='emp' AND users.accId =?) empCredit, (select sum(debitTable.amount) total,users.name from debitTable inner join users where users.accId=debitTable.uid AND debitTable.type='emp' AND users.accId =?) empDebit ",
+    mysqlConnection.query(" select COALESCE(ofcCredit.total,0) as ofcCredit,COALESCE(ofcDebit.total,0) as ofcDebit,COALESCE(clientCredit.total,0) as clientCredit,COALESCE(clientDebit.total,0) as clientDebit,COALESCE(empCredit.total,0) as empCredit,COALESCE(empDebit.total,0) as empDebit, COALESCE(ofcCredit.total,0) - COALESCE(ofcDebit.total,0) as ofc, COALESCE(clientCredit.total,0)- COALESCE(clientDebit.total,0) as client,COALESCE(empCredit.total,0)- COALESCE(empDebit.total,0) as emp from (select sum(creditTable.amount) total,users.name from creditTable inner join users where users.accId=creditTable.uid AND creditTable.type='ofc' AND users.accId =?) ofcCredit, (select sum(debitTable.amount) total,users.name from debitTable inner join users where users.accId=debitTable.uid AND debitTable.type='ofc' AND users.accId =?) ofcDebit inner join (select sum(creditTable.amount) total,users.name from creditTable inner join users where users.accId=creditTable.uid AND creditTable.type='client' AND users.accId =?) clientCredit, (select sum(debitTable.amount) total,users.name from debitTable inner join users where users.accId=debitTable.uid AND debitTable.type='client' AND users.accId =?) clientDebit inner join (select sum(creditTable.amount) total,users.name from creditTable inner join users where users.accId=creditTable.uid AND creditTable.type='emp' AND users.accId =?) empCredit, (select sum(debitTable.amount) total,users.name from debitTable inner join users where users.accId=debitTable.uid AND debitTable.type='emp' AND users.accId =?) empDebit ",
         [
             req.body.uId,
             req.body.uId,
@@ -66,7 +66,7 @@ router.post("/report/transactions/singleClient", checkToken, (req, res, next) =>
     );
 });
 // get all individual summery report for single client
-router.post("/report/transactions/singleClientSummery", checkToken, (req, res, next) => {
+router.post("/report/transactions/singleClientSummary", checkToken, (req, res, next) => {
     mysqlConnection.query("SELECT COALESCE(debitSum.total,0) AS total_debit, COALESCE(creditSum.total,0) AS total_credit, COALESCE(creditSum.total,0) - COALESCE(debitSum.total,0) AS balance FROM (SELECT clients.name, SUM(debitTable.amount) AS total FROM debitTable INNER JOIN clients WHERE clients.id = debitTable.pid AND debitTable.type = clients.type AND clients.uId = ? AND clients.id = ?) AS debitSum, (SELECT clients.name, SUM(creditTable.amount) AS total FROM creditTable INNER JOIN clients WHERE clients.id = creditTable.pid AND creditTable.type = clients.type AND clients.uId = ? AND clients.id = ?) AS creditSum ",
         [
             req.body.uId,
@@ -106,7 +106,7 @@ router.post("/report/transactions/singleEmployee", checkToken, (req, res, next) 
 });
 
 // get all individual summery report for single employee
-router.post("/report/transactions/singleEmployeeSummery", checkToken, (req, res, next) => {
+router.post("/report/transactions/singleEmployeeSummary", checkToken, (req, res, next) => {
     mysqlConnection.query("SELECT COALESCE(debitSum.total,0) AS total_debit, COALESCE(creditSum.total,0) AS total_credit, COALESCE(creditSum.total,0) - COALESCE(debitSum.total,0) AS balance FROM (SELECT employees.name, SUM(debitTable.amount) AS total FROM debitTable INNER JOIN employees WHERE employees.id = debitTable.pid AND debitTable.type = employees.type AND employees.uId = ? AND employees.id = ?) AS debitSum, (SELECT employees.name, SUM(creditTable.amount) AS total FROM creditTable INNER JOIN employees WHERE employees.id = creditTable.pid AND creditTable.type = employees.type AND employees.uId = ? AND employees.id = ?) AS creditSum",
         [
             req.body.uId,
