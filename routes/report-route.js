@@ -85,6 +85,46 @@ router.post("/report/transactions/singleClientSummery", checkToken, (req, res, n
     );
 });
 
+// get all individual transaction for single emp
+router.post("/report/transactions/singleEmployee", checkToken, (req, res, next) => {
+    mysqlConnection.query(" SELECT employees.name, debitTable.id, debitTable.uId, debitTable.pid, debitTable.amount, debitTable.tType, debitTable.note, debitTable.tTime, debitTable.type FROM debitTable INNER JOIN employees WHERE employees.id = debitTable.pid AND debitTable.type = employees.type AND employees.uId = ? AND employees.id =? UNION SELECT employees.name, creditTable.id, creditTable.uId, creditTable.pid, creditTable.amount, creditTable.tType, creditTable.note, creditTable.tTime, creditTable.type FROM creditTable INNER JOIN employees WHERE employees.id = creditTable.pid AND creditTable.type = employees.type AND employees.uId = ? And employees.id =? ORDER BY tTime DESC ",
+        [
+            req.body.uId,
+            req.body.id,
+            req.body.uId,
+            req.body.id,
+
+        ],
+        (err, rows, fields) => {
+            if (!err) {
+                res.send(rows);
+            } else {
+                console.log(err);
+            }
+        }
+    );
+});
+
+// get all individual summery report for single employee
+router.post("/report/transactions/singleEmployeeSummery", checkToken, (req, res, next) => {
+    mysqlConnection.query("SELECT COALESCE(debitSum.total,0) AS total_debit, COALESCE(creditSum.total,0) AS total_credit, COALESCE(creditSum.total,0) - COALESCE(debitSum.total,0) AS balance FROM (SELECT employees.name, SUM(debitTable.amount) AS total FROM debitTable INNER JOIN employees WHERE employees.id = debitTable.pid AND debitTable.type = employees.type AND employees.uId = ? AND employees.id = ?) AS debitSum, (SELECT employees.name, SUM(creditTable.amount) AS total FROM creditTable INNER JOIN employees WHERE employees.id = creditTable.pid AND creditTable.type = employees.type AND employees.uId = ? AND employees.id = ?) AS creditSum",
+        [
+            req.body.uId,
+            req.body.id,
+            req.body.uId,
+            req.body.id,
+
+        ],
+        (err, rows, fields) => {
+            if (!err) {
+                res.send(rows);
+            } else {
+                console.log(err);
+            }
+        }
+    );
+});
+
 module.exports = router;
 
 
